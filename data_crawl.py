@@ -1,7 +1,9 @@
+import json
+import logging
+
 import pandas as pd
 import requests
 import lxlm
-
 # # 获取表格
 # html_data = pd.read_html("http://jgj.wuhan.gov.cn/wfcl/42811.jhtml", encoding='utf-8')[0]
 # # 处理成csv数据
@@ -15,9 +17,10 @@ import lxlm
 
 import requests
 
+logging.getLogger().setLevel(logging.INFO)
 cookies_list = {
     '_uab_collina': '167884451608101158023961',
-    'JSESSIONID-L': '5efa3ad6-adae-4c4d-8c3f-c400e02bb94d',
+    'JSESSIONID-L': 'cc350e99-6ec9-4b7e-b6f1-0a3d7cba9796',
 }
 
 headers_list = {
@@ -45,12 +48,7 @@ data_list = {
     'startTime': '',
     'endTime': '',
     'gsyw': '01',
-    'token': 'dbeffcd5-915a-47be-b3f6-030ddbaca89d-18721c793eb',
 }
-
-# response = requests.post('https://js.122.gov.cn/m/viopub/getVioPubList', cookies=cookies_list, headers=headers_list, data=data_list)
-
-
 
 cookies_detail = {
     '_uab_collina': '167884451608101158023961',
@@ -80,8 +78,24 @@ data_detail = {
     'id': '32003610000000812307',
 }
 
+def get_vioid_list():
+    vioid_list = []
+    for i in range(200):
+        data_list['page'] = i
+        # 获取response
+        response = requests.post('https://js.122.gov.cn/m/viopub/getVioPubList', cookies=cookies_list, headers=headers_list, data=data_list)
+        response_data = json.loads(response.text)
+        code = response_data['code']
+        if (code != 200):
+            # cookie has expired
+            logging.info("cookies_list has expired. Pls renew it.")
+            return
+        for content in response_data['data']['list']['content']:
+            vioid_list.append(content['id'])
+    with open("./resources/vioid.txt", 'w+') as f:
+        for vioid in vioid_list:
+            f.write(vioid+'\n')
 
-
-response = requests.post('https://js.122.gov.cn/m/viopub/getVioPubDetail', cookies=cookies_detail, headers=headers_detail, data=data_detail)
-
-print(response.text)
+# response = requests.post('https://js.122.gov.cn/m/viopub/getVioPubDetail', cookies=cookies_detail, headers=headers_detail, data=data_detail)
+#
+# print(response.json())
