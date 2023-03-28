@@ -123,8 +123,8 @@ def get_violate_data():
             logging.info("cookies_detail has expired. Pls renew it.")
             return
         violate_data = response_data['data']
-        temp = {'act': violate_data['gscfss'], 'law': violate_data['gscfyj'], 'score': violate_data['gsjf'],
-                'punish': violate_data['gscfjg']}
+        temp = {'act': violate_data['gscfss'].encode("utf-8").decode("utf-8"), 'law': violate_data['gscfyj'].encode("utf-8").decode("utf-8"), 'score': violate_data['gsjf'].encode("utf-8").decode("utf-8"),
+                'punish': violate_data['gscfjg'].encode("utf-8").decode("utf-8")}
         json_list.append(json.dumps(temp, ensure_ascii=False))
     with open('./resources/violation.json', 'w+') as f:
         for json_data in json_list:
