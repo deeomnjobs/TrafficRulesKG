@@ -1,9 +1,9 @@
 import json
 import logging
-
 import pandas as pd
 import requests
 import lxlm
+
 # # 获取表格
 # html_data = pd.read_html("http://jgj.wuhan.gov.cn/wfcl/42811.jhtml", encoding='utf-8')[0]
 # # 处理成csv数据
@@ -15,9 +15,10 @@ import lxlm
 # gov_html_data = pd.read_html("http://js.122.gov.cn/#/viopubdetail?vioid=32003610000000816871")[0]
 # print(gov_html_data)
 
-import requests
-
+# 显示Log日志
 logging.getLogger().setLevel(logging.INFO)
+
+# list请求
 cookies_list = {
     '_uab_collina': '167884451608101158023961',
     'JSESSIONID-L': 'cc350e99-6ec9-4b7e-b6f1-0a3d7cba9796',
@@ -50,6 +51,7 @@ data_list = {
     'gsyw': '01',
 }
 
+# detail请求
 cookies_detail = {
     '_uab_collina': '167884451608101158023961',
     'JSESSIONID-L': '5efa3ad6-adae-4c4d-8c3f-c400e02bb94d',
@@ -78,12 +80,16 @@ data_detail = {
     'id': '32003610000000812307',
 }
 
+
+# 获取vioid_list
 def get_vioid_list():
+    logging.info("get_vioid_list is running.")
     vioid_list = []
     for i in range(200):
         data_list['page'] = i
         # 获取response
-        response = requests.post('https://js.122.gov.cn/m/viopub/getVioPubList', cookies=cookies_list, headers=headers_list, data=data_list)
+        response = requests.post('https://js.122.gov.cn/m/viopub/getVioPubList', cookies=cookies_list,
+                                 headers=headers_list, data=data_list)
         response_data = json.loads(response.text)
         code = response_data['code']
         if (code != 200):
@@ -94,8 +100,37 @@ def get_vioid_list():
             vioid_list.append(content['id'])
     with open("./resources/vioid.txt", 'w+') as f:
         for vioid in vioid_list:
-            f.write(vioid+'\n')
+            f.write(vioid + '\n')
+    logging.info("vioid_list is acquired.")
 
-# response = requests.post('https://js.122.gov.cn/m/viopub/getVioPubDetail', cookies=cookies_detail, headers=headers_detail, data=data_detail)
-#
-# print(response.json())
+# 获取violate_data
+def get_violate_data():
+    logging.info("get_violate_data is running.")
+    vioid_list = []
+    json_list = []
+    with open("./resources/vioid.txt", 'r') as f:
+        for line in f.readlines():
+            vioid_list.append(line.replace('\n', ''))
+    for vioid in vioid_list:
+        data_detail['id'] = vioid
+        print(data_detail['id'])
+        response = requests.post('https://js.122.gov.cn/m/viopub/getVioPubDetail', cookies=cookies_detail,
+                                 headers=headers_detail, data=data_detail)
+        response_data = json.loads(response.text)
+        code = response_data['code']
+        if (code != 200):
+            # cookie has expired
+            logging.info("cookies_detail has expired. Pls renew it.")
+            return
+        violate_data = response_data['data']
+        temp = {'act': violate_data['gscfss'], 'law': violate_data['gscfyj'], 'score': violate_data['gsjf'],
+                'punish': violate_data['gscfjg']}
+        json_list.append(json.dumps(temp, ensure_ascii=False))
+    with open('./resources/violation.json', 'w+') as f:
+        for json_data in json_list:
+            f.write(json_data + '\n')
+    logging.info("violate_data is acquired.")
+
+# 按需取用
+# get_vioid_list()
+# get_violate_data()
