@@ -3,6 +3,7 @@ import logging
 import pandas as pd
 import requests
 import lxlm
+import os
 
 # # 获取表格
 # html_data = pd.read_html("http://jgj.wuhan.gov.cn/wfcl/42811.jhtml", encoding='utf-8')[0]
@@ -16,8 +17,9 @@ import lxlm
 # print(gov_html_data)
 
 # 显示Log日志
-logging.getLogger().setLevel(logging.INFO)
 
+logging.getLogger().setLevel(logging.INFO)
+remove_chars = len(os.linesep)
 # list请求
 cookies_list = {
     '_uab_collina': '167884451608101158023961',
@@ -101,6 +103,7 @@ def get_vioid_list():
     with open("./resources/vioid.txt", 'w+') as f:
         for vioid in vioid_list:
             f.write(vioid + '\n')
+        f.truncate(f.tell() - remove_chars)
     logging.info("vioid_list is acquired.")
 
 # 获取violate_data
@@ -129,6 +132,7 @@ def get_violate_data():
     with open('./resources/violation.json', 'w+') as f:
         for json_data in json_list:
             f.write(json_data + '\n')
+        f.truncate(f.tell() - remove_chars)
     logging.info("violate_data is acquired.")
 
 # 按需取用
