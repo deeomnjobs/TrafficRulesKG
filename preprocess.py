@@ -9,7 +9,7 @@ file_val = 'resources/labeled_val.txt'
 file_test = './resources/labeled_test.txt'
 
 features_list = ['实施', '的违法行为', '，记', '分，给予', '给予', '的处罚', '依据', '']
-label_list = ['B-ACT', 'I-ACT', 'B-LAW', 'I-LAW', 'B-SCORE', 'I-SCORE', 'B-PUNISH', 'I-PUNISH']
+label_list = ['B-ACT', 'I-ACT',  'B-SCORE', 'I-SCORE', 'B-PUNISH', 'I-PUNISH','B-LAW', 'I-LAW']
 remove_chars = len(os.linesep)
 logging.getLogger().setLevel(logging.INFO)
 
@@ -108,4 +108,4 @@ def auto_label():
 
 # 按需取用
 # data_concat()
-# auto_label()
+auto_label()
