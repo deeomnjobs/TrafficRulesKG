@@ -13,9 +13,7 @@ from transformers import BertTokenizer
 
 bert_model = 'bert-base-chinese'
 tokenizer = BertTokenizer.from_pretrained(bert_model)
-VOCAB = ('<PAD>', '[CLS]', '[SEP]', 'O', 'B-BODY','I-TEST', 'I-EXAMINATIONS',
-            'I-TREATMENT', 'B-DRUG', 'B-TREATMENT', 'I-DISEASES', 'B-EXAMINATIONS',
-                'I-BODY', 'B-TEST', 'B-DISEASES', 'I-DRUG')
+VOCAB = ('<PAD>', '[CLS]', '[SEP]', 'O', 'B-ACT', 'I-ACT',  'B-SCORE', 'I-SCORE', 'B-PUNISH', 'I-PUNISH','B-LAW', 'I-LAW')
 
 tag2idx = {tag: idx for idx, tag in enumerate(VOCAB)}
 idx2tag = {idx: tag for idx, tag in enumerate(VOCAB)}
