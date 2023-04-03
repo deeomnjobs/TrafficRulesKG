@@ -127,9 +127,9 @@ if __name__=="__main__":
     parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--lr", type=float, default=0.001)
     parser.add_argument("--n_epochs", type=int, default=40)
-    parser.add_argument("--trainset", type=str, default="./CCKS_2019_Task1/processed_data/labeled_train.txt")
-    parser.add_argument("--validset", type=str, default="./CCKS_2019_Task1/processed_data/labeled_val.txt")
-    parser.add_argument("--testset", type=str, default="./CCKS_2019_Task1/processed_data/labeled_test.txt")
+    parser.add_argument("--trainset", type=str, default="./resources/labeled_train.txt")
+    parser.add_argument("--validset", type=str, default="./resources/labeled_val.txt")
+    parser.add_argument("--testset", type=str, default="./resources/labeled_test.txt")
 
     ner = parser.parse_args()
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
