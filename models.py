@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-'''
-@Author: Xavier WU
-@Date: 2021-11-30
-@LastEditTime: 2022-1-6
-@Description: This file is for building model. 
-@All Right Reserve
-'''
 
 import torch
 import torch.nn as nn

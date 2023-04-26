@@ -4,9 +4,10 @@ import os
 
 file_json = './resources/violation.json'
 file_violation_data = './resources/violation_data.txt'
-file_train = './resources/labeled_train.txt'
-file_val = 'resources/labeled_val.txt'
-file_test = './resources/labeled_test.txt'
+file_train_BIO = './resources/labeled_train.txt'
+file_val_BIO = './resources/labeled_val.txt'
+file_test_BIO = './resources/labeled_test.txt'
+file_violation_data_W2NER_json = './resources/violation_W2NER_json.json'
 
 features_list = ['实施', '的违法行为', '，记', '分，给予', '给予', '的处罚', '依据', '']
 label_list = ['B-ACT', 'I-ACT',  'B-SCORE', 'I-SCORE', 'B-PUNISH', 'I-PUNISH','B-LAW', 'I-LAW']
@@ -32,13 +33,13 @@ def data_concat():
     logging.info("data_concat is over.")
 
 
-def auto_label():
+def auto_label_BIO():
     logging.info("auto_label is running.")
     # readlines()只读入内存一次，需要提前存储
     with open(file_violation_data, 'r', encoding='utf-8') as f1:
         lines_f1 = len(f1.readlines())
 
-    with open(file_violation_data, 'r', encoding='utf-8') as f1, open(file_train, 'w+', encoding='utf-8') as f2, open(file_val, 'w+', encoding='utf-8') as f3, open(file_test, 'w+', encoding='utf-8') as f4:
+    with open(file_violation_data, 'r', encoding='utf-8') as f1, open(file_train_BIO, 'w+', encoding='utf-8') as f2, open(file_val_BIO, 'w+', encoding='utf-8') as f3, open(file_test_BIO, 'w+', encoding='utf-8') as f4:
         # train : val : test = 8 : 1 : 1
         bound_train = lines_f1 * 0.8
         bound_val = lines_f1 * 0.9
@@ -106,6 +107,61 @@ def auto_label():
         f4.truncate(f4.tell() - remove_chars)
     logging.info("auto_label is over.")
 
+def auto_label_w2ner():
+    res_list = []
+    ner_list = []
+    with open(file_violation_data,'r',encoding='utf-8') as f:
+        for line in f.readlines():
+            # ACT
+            index_1 = line.find(features_list[0])
+            index_2 = line.find(features_list[1])
+            if(index_1 != -1 and index_2 != -1):
+                len_1 = len(features_list[0])
+                start_index = index_1 + len_1
+                end_index = index_2
+                ner_list.append({"index":list(range(start_index,end_index)),"type":"ACT"})
+
+            # SCORE
+            index_3 = line.find(features_list[2])
+            index_4 = line.find(features_list[3])
+            if (index_3 != -1 and index_4 != -1):
+                len_1 = len(features_list[2])
+                start_index = index_3 + len_1
+                end_index = index_4
+                ner_list.append({"index": list(range(start_index, end_index)), "type": "SCORE"})
+
+            # PUNISH
+            index_5 = line.find(features_list[4])
+            index_6 = line.find(features_list[5])
+            if (index_5 != -1 and index_6 != -1):
+                len_1 = len(features_list[4])
+                start_index = index_5 + len_1
+                end_index = index_6
+                ner_list.append({"index": list(range(start_index, end_index)), "type": "PUNISH"})
+
+            # LAW
+            index_7 = line.find(features_list[6])
+            if (index_7 != -1):
+                len_1 = len(features_list[6])
+                start_index = index_7 + len_1
+                end_index = -1
+                if (index_3 != -1):
+                    end_index = index_3 - 1
+                else:
+                    end_index = index_5 - 1
+                ner_list.append({"index": list(range(start_index, end_index)), "type": "LAW"})
+            sentence = [one for one in line]
+            res = {'sentence':sentence,'ner':ner_list}
+            ner_list = []
+            res_list.append(res)
+    print(res_list)
+    with open(file_violation_data_W2NER_json,'w',encoding='utf-8') as f:
+        json.dump(res_list,f)
+
+
+
+
 # 按需取用
 # data_concat()
-auto_label()
+# auto_label_BIO()
+auto_label_w2ner()

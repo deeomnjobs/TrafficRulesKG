@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-'''
-@Author: Xavier WU
-@Date: 2021-11-30
-@LastEditTime: 2022-1-6
-@Description: This file is for training, validating and testing. 
-@All Right Reserve
-'''
 
 import torch
 import torch.nn as nn
@@ -181,6 +174,7 @@ if __name__=="__main__":
           best_model = candidate_model
           _best_val_loss = loss
           _best_val_acc = acc
+          # save best model
           torch.save({'model': best_model.state_dict()}, 'best_model.pth')
 
         print("=============================================")
