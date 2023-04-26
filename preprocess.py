@@ -8,6 +8,9 @@ file_train_BIO = './resources/labeled_train.txt'
 file_val_BIO = './resources/labeled_val.txt'
 file_test_BIO = './resources/labeled_test.txt'
 file_violation_data_W2NER_json = './resources/violation_W2NER_json.json'
+file_train_w2ner = './resources/labeled_train_w2ner.json'
+file_val_w2ner = './resources/labeled_val_w2ner.json'
+file_test_w2ner = './resources/labeled_test_w2ner.json'
 
 features_list = ['实施', '的违法行为', '，记', '分，给予', '给予', '的处罚', '依据', '']
 label_list = ['B-ACT', 'I-ACT',  'B-SCORE', 'I-SCORE', 'B-PUNISH', 'I-PUNISH','B-LAW', 'I-LAW']
@@ -158,10 +161,34 @@ def auto_label_w2ner():
     with open(file_violation_data_W2NER_json,'w',encoding='utf-8') as f:
         json.dump(res_list,f)
 
+def data_partion():
+    with open(file_violation_data_W2NER_json,'r',encoding='utf-8') as f:
+        violation_data = json.load(f)
+    size = len(violation_data)
+    bound_train = size * 0.8
+    bound_val = size * 0.9
+    labeled_train_w2ner = []
+    labeled_test_w2ner = []
+    labeled_val_w2ner = []
+    for i in range(size):
+        if i < bound_train:
+            labeled_train_w2ner.append(violation_data[i])
+        elif i < bound_val:
+            labeled_val_w2ner.append(violation_data[i])
+        else:
+            labeled_test_w2ner.append((violation_data[i]))
+    with open(file_train_w2ner,'w',encoding='utf-8') as f:
+        json.dump(labeled_train_w2ner,f)
+    with open(file_val_w2ner,'w',encoding='utf-8') as f:
+        json.dump(labeled_val_w2ner,f)
+    with open(file_test_w2ner,'w',encoding='utf-8') as f:
+        json.dump(labeled_test_w2ner,f)
+
 
 
 
 # 按需取用
 # data_concat()
 # auto_label_BIO()
-auto_label_w2ner()
+# auto_label_w2ner()
+data_partion()
