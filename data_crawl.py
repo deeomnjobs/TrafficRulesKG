@@ -23,7 +23,7 @@ remove_chars = len(os.linesep)
 # list请求
 cookies_list = {
     '_uab_collina': '167884451608101158023961',
-    'JSESSIONID-L': 'cc350e99-6ec9-4b7e-b6f1-0a3d7cba9796',
+    'JSESSIONID-L': 'd4d5ec69-c5c6-4f46-881b-cb7934948766',
 }
 
 headers_list = {
@@ -56,7 +56,7 @@ data_list = {
 # detail请求
 cookies_detail = {
     '_uab_collina': '167884451608101158023961',
-    'JSESSIONID-L': '5efa3ad6-adae-4c4d-8c3f-c400e02bb94d',
+    'JSESSIONID-L': 'd4d5ec69-c5c6-4f46-881b-cb7934948766',
 }
 
 headers_detail = {
@@ -128,8 +128,9 @@ def get_violate_data():
         violate_data = response_data['data']
         temp = {'act': violate_data['gscfss'].encode("utf-8").decode("utf-8"), 'law': violate_data['gscfyj'].encode("utf-8").decode("utf-8"), 'score': violate_data['gsjf'].encode("utf-8").decode("utf-8"),
                 'punish': violate_data['gscfjg'].encode("utf-8").decode("utf-8")}
-        json_list.append(json.dumps(temp, ensure_ascii=False))
-    with open('./resources/violation.json', 'w+') as f:
+        if '醉酒' not in temp['act']:
+            json_list.append(json.dumps(temp, ensure_ascii=False))
+    with open('resources/raw/violation_2.json', 'w+') as f:
         for json_data in json_list:
             f.write(json_data + '\n')
         f.truncate(f.tell() - remove_chars)
@@ -137,4 +138,4 @@ def get_violate_data():
 
 # 按需取用
 # get_vioid_list()
-# get_violate_data()
+get_violate_data()
