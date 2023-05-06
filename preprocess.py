@@ -14,7 +14,7 @@ file_val_w2ner = 'resources/w2ner/labeled_val_w2ner.json'
 file_test_w2ner = 'resources/w2ner/labeled_test_w2ner.json'
 
 features_list = ['实施', '的违法行为', '，记', '分，给予', '给予', '的处罚', '依据', '']
-features_list_weibo = ['实施“', '”违法行为', '处以', '惩罚：', '。']
+features_list_weibo = ['实施“', '”违法行为', '处以', '处罚：', '。', '，记']
 label_list = ['B-ACT', 'I-ACT', 'B-SCORE', 'I-SCORE', 'B-PUNISH', 'I-PUNISH', 'B-LAW', 'I-LAW']
 remove_chars = len(os.linesep)
 logging.getLogger().setLevel(logging.INFO)
@@ -189,7 +189,7 @@ def auto_label_w2ner():
 def auto_label_weibo():
     res_list = []
     ner_list = []
-    with open('./test.txt', 'r', encoding='utf-8') as f:
+    with open('resources/raw/test.txt', 'r', encoding='utf-8') as f:
         for line in f.readlines():
             # ACT
             index_1 = line.find(features_list_weibo[0])
@@ -202,20 +202,28 @@ def auto_label_weibo():
 
             # PUNISH
             index_3 = line.find(features_list_weibo[2])
+            index_4 = line.find(features_list_weibo[5])
             len_1 = len(features_list_weibo[2])
             if index_3 == -1:
                 index_3 = line.find(features_list_weibo[3])
                 len_1 = len(features_list_weibo[3])
-            if (index_3 != -1):
+            if index_3 != -1 :
                 start_index = index_3 + len_1
                 end_index = line.find(features_list_weibo[4])
-                ner_list.append({"index": list(range(start_index, end_index)), "type": "PUNISH"})
+                if index_4 == -1:
+                    ner_list.append({"index": list(range(start_index, end_index)), "type": "PUNISH"})
+                else:
+                    print("yes")
+                    end_index_punish = index_4
+                    start_index_score = index_4 - 1
+                    end_index_score = line.find(features_list_weibo[4])
+                    ner_list.append({"index": list(range(start_index, end_index_punish)), "type": "PUNISH"})
+                    ner_list.append({"index": list(range(start_index_score, end_index_score)), "type": "SCORE"})
             sentence = [one for one in line]
             res = {'sentence': sentence, 'ner': ner_list}
             ner_list = []
             res_list.append(res)
-    print(res_list)
-    with open('resources/w2ner/labeled_test', 'w', encoding='utf-8') as f:
+    with open('resources/w2ner/labeled_test.json', 'w', encoding='utf-8') as f:
         json.dump(res_list, f)
 
 
@@ -248,5 +256,5 @@ def data_partion(file_read, file_train, file_val, file_test):
 # data_concat()
 # auto_label_BIO()
 # auto_label_w2ner()
-data_partion('./resources/w2ner/labeled_test','./resources/w2ner/labeled_train_weibo_w2ner.json','./resources/w2ner/labeled_val_weibo_w2ner.json','./resources/w2ner/labeled_test_weibo_w2ner.json')
-# auto_label_weibo()
+auto_label_weibo()
+data_partion('./resources/w2ner/labeled_test.json','./resources/w2ner/labeled_train_weibo_w2ner.json','./resources/w2ner/labeled_val_weibo_w2ner.json','./resources/w2ner/labeled_test_weibo_w2ner.json')

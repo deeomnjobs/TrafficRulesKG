@@ -1,21 +1,19 @@
-list_test = []
-test = (1,2,3,4,5)
-list_act  = []
-list_socre = []
-list_punish = []
-list_law = []
+set_act  = set()
+set_score = set()
+set_punish = set()
+set_law = set()
 def extract(sentence,start):
 
     print()
-def w2ner2(w2ner_list,):
-    for l in list_test:
-        for i in range(1,len(l)):
-            if i[1] == 'ACT':
-                print()
-            if i[1] == 'SCORE':
-                print()
-            if i[1] == 'PUNISH':
-                print()
-            if i[1] == 'LAW':
-                print()
+def w2ner2(list_predict):
+    for predict in list_predict:
+        for data in range(1, len(predict)):
+            if data[1] == 'ACT':
+                set_act.add(data[1])
+            if data[1] == 'SCORE':
+                set_score.add(data[1])
+            if data[1] == 'PUNISH':
+                set_punish.add(data[1])
+            if data[1] == 'LAW':
+                set_law.add(data[1])
     print()
