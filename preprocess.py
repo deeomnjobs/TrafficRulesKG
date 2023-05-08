@@ -65,7 +65,7 @@ def auto_label_BIO():
     with open(file_violation_data, 'r', encoding='utf-8') as f1, open(file_train_BIO, 'w+',
                                                                       encoding='utf-8') as f2, open(file_val_BIO, 'w+',
                                                                                                     encoding='utf-8') as f3, open(
-            file_test_BIO, 'w+', encoding='utf-8') as f4:
+        file_test_BIO, 'w+', encoding='utf-8') as f4:
         # train : val : test = 8 : 1 : 1
         bound_train = lines_f1 * 0.8
         bound_val = lines_f1 * 0.9
@@ -207,7 +207,7 @@ def auto_label_weibo():
             if index_3 == -1:
                 index_3 = line.find(features_list_weibo[3])
                 len_1 = len(features_list_weibo[3])
-            if index_3 != -1 :
+            if index_3 != -1:
                 start_index = index_3 + len_1
                 end_index = line.find(features_list_weibo[4])
                 if index_4 == -1:
@@ -215,7 +215,7 @@ def auto_label_weibo():
                 else:
                     print("yes")
                     end_index_punish = index_4
-                    start_index_score = index_4 - 1
+                    start_index_score = index_4 + 1
                     end_index_score = line.find(features_list_weibo[4])
                     ner_list.append({"index": list(range(start_index, end_index_punish)), "type": "PUNISH"})
                     ner_list.append({"index": list(range(start_index_score, end_index_score)), "type": "SCORE"})
@@ -257,4 +257,5 @@ def data_partion(file_read, file_train, file_val, file_test):
 # auto_label_BIO()
 # auto_label_w2ner()
 auto_label_weibo()
-data_partion('./resources/w2ner/labeled_test.json','./resources/w2ner/labeled_train_weibo_w2ner.json','./resources/w2ner/labeled_val_weibo_w2ner.json','./resources/w2ner/labeled_test_weibo_w2ner.json')
+data_partion('./resources/w2ner/labeled_test.json', './resources/w2ner/labeled_train_weibo_w2ner.json',
+             './resources/w2ner/labeled_val_weibo_w2ner.json', './resources/w2ner/labeled_test_weibo_w2ner.json')
