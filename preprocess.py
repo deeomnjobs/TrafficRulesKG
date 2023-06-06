@@ -189,7 +189,7 @@ def auto_label_w2ner():
 def auto_label_weibo():
     res_list = []
     ner_list = []
-    with open('resources/raw/test.txt', 'r', encoding='utf-8') as f:
+    with open('resources/raw/weibo.txt', 'r', encoding='utf-8') as f:
         for line in f.readlines():
             # ACT
             index_1 = line.find(features_list_weibo[0])

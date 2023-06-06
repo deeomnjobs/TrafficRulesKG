@@ -90,9 +90,9 @@ def url_list_acquire():
 # response = requests.get('https://weibo.com/ttarticle/p/show?id=2309404893730850341459',cookies=cookies_1)
 # response.encoding='utf-8'
 # soup = BeautifulSoup(response.text,'html.parser')
-# # with open('test.txt','w',encoding='utf-8') as f:
+# # with open('weibo.txt','w',encoding='utf-8') as f:
 # #     f.write(soup.text)
-# # with open('test.txt','r',encoding='utf-8') as f1,open('test_1.txt','w',encoding='utf-8') as f2:
+# # with open('weibo.txt','r',encoding='utf-8') as f1,open('test_1.txt','w',encoding='utf-8') as f2:
 # #     for line in f1.readlines():
 # #         if line != '\n':
 # #             f2.write(line)

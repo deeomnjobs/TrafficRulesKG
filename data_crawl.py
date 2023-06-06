@@ -106,6 +106,7 @@ def get_vioid_list():
         f.truncate(f.tell() - remove_chars)
     logging.info("vioid_list is acquired.")
 
+
 # 获取violate_data
 def get_violate_data():
     logging.info("get_violate_data is running.")
@@ -126,7 +127,9 @@ def get_violate_data():
             logging.info("cookies_detail has expired. Pls renew it.")
             return
         violate_data = response_data['data']
-        temp = {'act': violate_data['gscfss'].encode("utf-8").decode("utf-8"), 'law': violate_data['gscfyj'].encode("utf-8").decode("utf-8"), 'score': violate_data['gsjf'].encode("utf-8").decode("utf-8"),
+        temp = {'act': violate_data['gscfss'].encode("utf-8").decode("utf-8"),
+                'law': violate_data['gscfyj'].encode("utf-8").decode("utf-8"),
+                'score': violate_data['gsjf'].encode("utf-8").decode("utf-8"),
                 'punish': violate_data['gscfjg'].encode("utf-8").decode("utf-8")}
         if '醉酒' not in temp['act']:
             json_list.append(json.dumps(temp, ensure_ascii=False))
@@ -136,6 +139,7 @@ def get_violate_data():
         f.truncate(f.tell() - remove_chars)
     logging.info("violate_data is acquired.")
 
+
 # 按需取用
-# get_vioid_list()
+get_vioid_list()
 get_violate_data()

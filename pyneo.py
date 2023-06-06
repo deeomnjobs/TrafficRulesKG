@@ -1,7 +1,4 @@
-import json
-
 from neo4j import GraphDatabase
-import format_convert
 
 # 连接neo4j
 uri = "neo4j://localhost:7687"
@@ -16,6 +13,7 @@ def init_node(tx):
            "MERGE (n5:OtherNode{name:'江永县地方法规'})"
            "MERGE (n6:OtherNode{name:'上海市地方法规'})"
            )
+
 
 def init_relationships(tx):
     tx.run("MATCH (n1:OtherNode{name:'交通法规'}),(n2:OtherNode{name:'地方法规'})"
@@ -34,6 +32,7 @@ def init_relationships(tx):
            "MERGE (n2)-[:属于]->(n1)"
            )
 
+
 def init_act_rule(tx):
     tx.run("match (from:ACT{belong:'上海市地方法规'}),(to:OtherNode{name:'上海市地方法规'})"
            "merge (from)-[:属于]->(to)"
@@ -47,6 +46,7 @@ def init_act_rule(tx):
     tx.run("match (from:ACT{belong:'江永县地方法规'}),(to:OtherNode{name:'江永县地方法规'})"
            "merge (from)-[:属于]->(to)"
            )
+
 
 # 创建节点(ACT)
 def merge_act(tx, name, belong):
@@ -92,6 +92,7 @@ def merge_relationship_deduction_of_points(tx, ACT_name, SCORE_name, ACT_belong)
            "MERGE (act)-[:记分]->(score)",
            ACT_name=ACT_name, SCORE_name=SCORE_name, ACT_belong=ACT_belong)
 
+
 # 批处理创建节点(上海)
 def batch_create_nodes_ShangHai(tx):
     tx.run("LOAD CSV WITH HEADERS  FROM 'file:///ShangHai.csv' AS line   "
@@ -99,6 +100,7 @@ def batch_create_nodes_ShangHai(tx):
            "MERGE (n2:PUNISH{name:line.PUNISH})"
            "MERGE (n3:SCORE{name:line.SCORE})"
            )
+
 
 # 批处理创建节点(全国性)
 def batch_create_nodes_Nation(tx):
@@ -108,6 +110,7 @@ def batch_create_nodes_Nation(tx):
            "MERGE (n3:SCORE{name:line.SCORE})"
            "MERGE (n4:OTHER_PENALTIES{name:line.OTHER_PENALTIES})"
            )
+
 
 # 批处理创建节点(武汉)
 def batch_create_nodes_WuHan(tx):
@@ -122,6 +125,7 @@ def batch_create_nodes_WuHan(tx):
            "MERGE (n8:OTHER_MEASURES{name:line.OTHER_MEASURES})"
            "MERGE (n9:BELONG{name:line.BELONG})"
            )
+
 
 # 批处理创建节点(江永)
 def batch_create_nodes_JiangYong(tx):
@@ -149,6 +153,7 @@ def batch_create_relationships_Shanghai(tx):
            "match (from:ACT{name:line.ACT,belong:line.BELONG}),(to:PUNISH{name:line.PUNISH})"
            "merge (from)-[r:惩罚措施]->(to)"
            )
+
 
 def batch_create_relationships_WuHan(tx):
     tx.run("LOAD CSV WITH HEADERS  FROM 'file:///WuHan.csv' AS line   "
@@ -188,6 +193,7 @@ def batch_create_relationships_WuHan(tx):
            "merge (from)-[:依据]->(to)"
            )
 
+
 def batch_create_relationships_Nation(tx):
     tx.run("LOAD CSV WITH HEADERS  FROM 'file:///Nation.csv' AS line   "
            "match (from:ACT{name:line.ACT,belong:line.BELONG}),(to:PUNISH{name:line.PUNISH})"
@@ -201,6 +207,7 @@ def batch_create_relationships_Nation(tx):
            "match (from:ACT{name:line.ACT,belong:line.BELONG}),(to:SCORE{name:line.SCORE})"
            "merge (from)-[:记分]->(to)"
            )
+
 
 def batch_create_relationships_JiangYong(tx):
     tx.run("LOAD CSV WITH HEADERS  FROM 'file:///JiangYong.csv' AS line   "
@@ -227,6 +234,7 @@ def batch_create_relationships_JiangYong(tx):
            "match (from:ENFORCEMENT{name:line.ENFORCEMENT}),(to:ENFORCEMENT_BASIS{name:line.ENFORCEMENT_BASIS})"
            "merge (from)-[:依据]->(to)"
            )
+
 
 def create_nodes(nodes_list, belong):
     i = 0
@@ -262,12 +270,13 @@ def create_relationship(nodes_list, belong):
             session.close()
         i = i + 1
 
+
 def removal(tx):
     tx.run("LOAD CSV WITH HEADERS  FROM 'file:///Nation.csv' AS line   "
-           "match (node1:Act{name:line.ACT})"
+           "match (node1:ACT{name:line.ACT})"
            "where node1.belong <> '全国性法规'"
-           "delete node1"
-    )
+           "detach delete node1"
+           )
 
 
 if __name__ == '__main__':
@@ -288,21 +297,20 @@ if __name__ == '__main__':
     # create_relationship(unstruct_nodes_list, "上海市地方法规")
     # driver.close()
     with driver.session() as session:
-        # session.execute_write(init_node)
-        # session.execute_write(init_relationships)
-        # # 上海
-        # session.execute_write(batch_create_nodes_ShangHai)
-        # session.execute_write(batch_create_relationships_Shanghai)
-        # # 武汉
-        # session.execute_write(batch_create_nodes_WuHan)
-        # session.execute_write(batch_create_relationships_WuHan)
-        # # 江永
-        # session.execute_write(batch_create_nodes_JiangYong)
-        # session.execute_write(batch_create_relationships_JiangYong)
+        session.execute_write(init_node)
+        session.execute_write(init_relationships)
+        # 上海
+        session.execute_write(batch_create_nodes_ShangHai)
+        session.execute_write(batch_create_relationships_Shanghai)
+        # 武汉
+        session.execute_write(batch_create_nodes_WuHan)
+        session.execute_write(batch_create_relationships_WuHan)
+        # 江永
+        session.execute_write(batch_create_nodes_JiangYong)
+        session.execute_write(batch_create_relationships_JiangYong)
         # 全国性
-        # session.execute_write(batch_create_nodes_Nation)
-        # session.execute_write(batch_create_relationships_Nation)
-        #
-        # session.execute_write(init_act_rule)
+        session.execute_write(batch_create_nodes_Nation)
+        session.execute_write(batch_create_relationships_Nation)
+        session.execute_write(init_act_rule)
         session.execute_write(removal)
     driver.close()
